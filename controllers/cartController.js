@@ -2,12 +2,20 @@ const Cart = require('../models/cart');
 const Product = require("../models/products");
 
 exports.addToCart = async (req, res, next) => {
+  const existsCart = await Cart.findOne({productId: req.body.productId});
+  if (existsCart != null) {
+    const doc = await Cart.findByIdAndUpdate(existsCart._id, {quantity: existsCart.quantity + 1});
+    res.status(201).json({
+      status: "success",
+      data: doc,
+    });
+    return;
+  } 
   const doc = await Cart.create(req.body);
-  const shoes = await Product.findByIdAndUpdate(req.body.productId, {addedToCart: true});
+  await Product.findByIdAndUpdate(req.body.productId, {addedToCart: true});
   res.status(201).json({
     status: "success",
     data: doc,
-    shoes
   });
 }
 
