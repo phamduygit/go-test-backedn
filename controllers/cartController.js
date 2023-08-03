@@ -38,8 +38,9 @@ exports.update = async (req, res, next) => {
 }
 
 exports.delete = async (req, res, next) => {
+  const cart = await Cart.findById(req.params.id);
+  const shoes = await Product.findByIdAndUpdate(cart.productId, {addedToCart: false});
   const doc = await Cart.deleteOne({ _id: req.params.id })
-  const shoes = await Product.findByIdAndUpdate(req.body.productId, {addedToCart: false});
   res.status(200).json({
     status: "success",
     data: doc
